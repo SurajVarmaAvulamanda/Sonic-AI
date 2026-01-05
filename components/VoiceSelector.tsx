@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { VoiceName } from '../types';
 
@@ -7,45 +8,52 @@ interface VoiceSelectorProps {
   label?: string;
 }
 
-const VOICES: { name: VoiceName; description: string }[] = [
-  { name: 'Kore', description: 'Deep & Commanding' },
-  { name: 'Puck', description: 'Bright & Youthful' },
-  { name: 'Charon', description: 'Mature & Steady' },
-  { name: 'Fenrir', description: 'Energetic & Vibrant' },
-  { name: 'Zephyr', description: 'Smooth & Professional' },
+const VOICES: { name: VoiceName; description: string; accent: string }[] = [
+  { name: 'Kore', description: 'Commanding', accent: 'from-blue-600' },
+  { name: 'Puck', description: 'Youthful', accent: 'from-green-500' },
+  { name: 'Charon', description: 'Profound', accent: 'from-purple-600' },
+  { name: 'Fenrir', description: 'Vibrant', accent: 'from-orange-500' },
+  { name: 'Zephyr', description: 'Polished', accent: 'from-pink-600' },
 ];
 
 export const VoiceSelector: React.FC<VoiceSelectorProps> = ({ selected, onSelect, label }) => {
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-5">
       {label && (
-        <label className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.3em] pl-1">
+        <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.5em] pl-3">
           {label}
         </label>
       )}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
         {VOICES.map((v) => {
           const isActive = selected === v.name;
           return (
             <button
               key={v.name}
               onClick={() => onSelect(v.name)}
-              className={`flex flex-col items-center justify-center p-3 rounded-2xl border transition-all duration-300 h-24 text-center group relative overflow-hidden ${isActive
-                  ? 'bg-[var(--accent-primary)] border-[var(--accent-primary)] text-white shadow-lg scale-[1.02]'
-                  : 'bg-[var(--bg-tertiary)] border-[var(--border-color)] text-[var(--text-muted)] hover:bg-[var(--bg-secondary)] hover:border-[var(--accent-primary)]'
-                }`}
+              className={`flex flex-col items-center justify-center p-6 rounded-[2rem] border transition-all duration-500 h-32 text-center group relative overflow-hidden ${
+                isActive
+                  ? 'bg-white/[0.08] border-white/20 text-white shadow-2xl scale-[1.05]'
+                  : 'bg-white/[0.02] border-white/5 text-gray-500 hover:bg-white/[0.04] hover:border-white/10'
+              }`}
             >
-              {/* Liquid glow effect behind active */}
+              {/* Animated Glow Backing for active selection */}
               {isActive && (
-                <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent blur-xl opacity-50 -z-10 animate-pulse"></div>
+                <div className={`absolute inset-0 bg-gradient-to-br ${v.accent} to-transparent opacity-20 blur-2xl animate-pulse`}></div>
               )}
+              
+              <div className={`w-2 h-2 rounded-full mb-3 transition-all duration-500 ${isActive ? 'bg-white scale-125' : 'bg-white/10 group-hover:bg-white/30'}`}></div>
 
-              <span className={`text-xs font-black tracking-tighter mb-1 line-clamp-1 w-full ${isActive ? 'text-white' : 'text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]'}`}>
+              <span className={`text-sm font-black tracking-tighter mb-1 transition-colors ${isActive ? 'text-white' : 'text-gray-300'}`}>
                 {v.name.toUpperCase()}
               </span>
-              <span className={`text-[8px] font-bold uppercase tracking-widest leading-none line-clamp-2 px-1 ${isActive ? 'text-blue-100' : 'text-[var(--text-muted)]'}`}>
+              <span className={`text-[8px] font-black uppercase tracking-[0.2em] transition-colors ${isActive ? 'text-blue-400' : 'text-gray-600'}`}>
                 {v.description}
               </span>
+
+              {isActive && (
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-blue-500 rounded-t-full"></div>
+              )}
             </button>
           );
         })}
