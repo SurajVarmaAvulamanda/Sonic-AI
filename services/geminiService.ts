@@ -74,7 +74,7 @@ RULES:
 2. Use-Case: ${useCase} (${toneMap[useCase]}).
 3. Language: ${language}.
 4. Target Word Count: Approximately ${targetWordCount} words.
-5. Voice Tags: 
+5. Voice Tags (VITAL): 
    - [Breath]: Natural quick breath between thoughts.
    - [Pause]: Meaningful silence for emphasis.
    - [Soft Pause]: Micro-pause for conversational rhythm.
@@ -114,14 +114,19 @@ export async function generateSingleSpeakerAudio(
   language: Language = 'English'
 ): Promise<string> {
   const ai = getAIClient();
-  const cleanText = text.replace(/\[.*?\]/g, '');
   
+  // We keep the tags like [Breath] and [Pause] because Gemini TTS can interpret them 
+  // if instructed correctly in the prompt below.
   const prompt = `ACT AS AN ULTRA-NATURAL ${language.toUpperCase()} VOICE.
 Context: Performing a script in ${style} style.
 Performance: Naturalness ${params.naturalness}, Stability ${params.stability}, Clarity ${params.clarity}.
 Speed: ${params.rate}x. Volume: ${params.volume}x. Pitch: ${params.pitch}x.
-Interpret [Breath], [Pause], and [Soft Pause] tags as human rhythmic delivery.
-Text: "${cleanText}"`;
+CRITICAL PERFORMANCE INSTRUCTION: 
+Whenever you see [Breath], [Pause], or [Soft Pause] tags, do not speak them. Instead, perform the action they describe.
+Perform [Breath] as a quick inhaled breath.
+Perform [Pause] as a 1-second silence.
+Perform [Soft Pause] as a micro-silence for rhythm.
+Text to Perform: "${text}"`;
 
   const response = await ai.models.generateContent({
     model: "gemini-2.5-flash-preview-tts",
@@ -151,6 +156,7 @@ export async function generateMultiSpeakerAudio(
   
   const prompt = `PERFORM AS A HIGH-QUALITY ${language.toUpperCase()} NATURAL CONVERSATION.
 Pacing: ${params.rate}x speed. 
+Whenever you see performance tags like [Breath] or [Pause], execute them as vocal actions, do not speak them.
 Goal: Human flow with appropriate emotional transitions using [Calm], [Confident], or [Excited].
 Script:
 ${text}`;
